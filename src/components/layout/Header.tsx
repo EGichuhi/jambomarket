@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, Search, ShoppingBag, User, X } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
+import { useAuth } from '../../contexts/AuthContext';
 import SearchBar from '../common/SearchBar';
 
 const Header = () => {
@@ -9,6 +10,7 @@ const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { cartItems } = useCart();
+  const { user, signOut } = useAuth();
   const location = useLocation();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -40,6 +42,14 @@ const Header = () => {
     { name: 'Categories', path: '/category/all' },
     { name: 'About', path: '/about' },
   ];
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
     <header 
@@ -96,14 +106,39 @@ const Header = () => {
               )}
             </Link>
 
-            {/* User - placeholder for authentication */}
-            <Link 
-              to="/login" 
-              className="text-secondary-700 hover:text-primary-600 transition-colors p-1 hidden sm:block"
-              aria-label="User account"
-            >
-              <User size={20} />
-            </Link>
+            {/* User Menu */}
+            {user ? (
+              <div className="relative group">
+                <button className="text-secondary-700 hover:text-primary-600 transition-colors p-1">
+                  <User size={20} />
+                </button>
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block">
+                  <div className="px-4 py-2 text-sm text-secondary-700 border-b border-secondary-100">
+                    {user.email}
+                  </div>
+                  <Link
+                    to="/profile"
+                    className="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="block w-full text-left px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Link 
+                to="/login" 
+                className="text-secondary-700 hover:text-primary-600 transition-colors p-1"
+                aria-label="Sign in"
+              >
+                <User size={20} />
+              </Link>
+            )}
 
             {/* Mobile menu button */}
             <button 
@@ -133,13 +168,15 @@ const Header = () => {
                   {link.name}
                 </NavLink>
               ))}
-              <Link 
-                to="/login"
-                className="text-secondary-700 hover:text-primary-600 transition-colors text-lg flex items-center"
-              >
-                <User size={18} className="mr-2" />
-                <span>Login / Register</span>
-              </Link>
+              {!user && (
+                <Link 
+                  to="/login"
+                  className="text-secondary-700 hover:text-primary-600 transition-colors text-lg flex items-center"
+                >
+                  <User size={18} className="mr-2" />
+                  <span>Login / Register</span>
+                </Link>
+              )}
             </nav>
           </div>
         )}

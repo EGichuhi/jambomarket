@@ -14,9 +14,11 @@ import CartPage from './pages/CartPage';
 import AboutPage from './pages/AboutPage';
 import NotFoundPage from './pages/NotFoundPage';
 import BusinessSignupPage from './pages/BusinessSignupPage';
+import LoginPage from './pages/LoginPage';
 
 // Contexts
 import { CartProvider } from './contexts/CartContext';
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -42,21 +44,24 @@ function App() {
   }
 
   return (
-    <CartProvider>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="product/:id" element={<ProductPage />} />
-          <Route path="shop/:id" element={<ShopPage />} />
-          <Route path="shops" element={<ShopsPage />} />
-          <Route path="category/:id" element={<CategoryPage />} />
-          <Route path="cart" element={<CartPage />} />
-          <Route path="about" element={<AboutPage />} />
-          <Route path="register" element={<BusinessSignupPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-      </Routes>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="product/:id" element={<ProductPage />} />
+            <Route path="shop/:id" element={<ShopPage />} />
+            <Route path="shops" element={<ShopsPage />} />
+            <Route path="category/:id" element={<CategoryPage />} />
+            <Route path="cart" element={<CartPage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="register" element={<BusinessSignupPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 
